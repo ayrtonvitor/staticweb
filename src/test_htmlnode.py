@@ -1,7 +1,8 @@
 import unittest
 from htmlnode import (
     HTMLNode,
-    LeafNode
+    LeafNode,
+    ParentNode
     )
 
 class TestHTMLNode(unittest.TestCase):
@@ -49,6 +50,50 @@ class TestLeafNode(unittest.TestCase):
     def test_to_html_no_value(self):
         leaf = LeafNode('a', None)
         self.assertRaises(ValueError, leaf.to_html)
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html_no_tag(self):
+        node = ParentNode(None, LeafNode('a', 'abc'))
+        with self.assertRaises(ValueError) as cm:
+            node.to_html()
+        self.assertEqual(str(cm.exception), "Parent node requires a tag")
+
+    def test_to_html_no_children(self):
+        node = ParentNode('div', None)
+        with self.assertRaises(ValueError) as cm:
+            node.to_html()
+
+        self.assertEqual(str(cm.exception),
+                """No children provided
+                   A node with no children is a leaf node""")
+
+    def test_to_html_multile_children_props(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+            {'class': 'greeting', 'href': 'https://abc.com'})
+
+        self.assertEqual(
+            '<p class="greeting" href="https://abc.com"><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>',
+            node.to_html())
+
+    def test_to_html_multile_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ])
+        self.assertEqual(
+            '<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>',
+            node.to_html())
 
 if __name__ == "__main__":
     unittest.main()
