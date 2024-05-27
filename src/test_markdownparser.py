@@ -118,3 +118,13 @@ class TestMarkdownParser(unittest.TestCase):
             )
         ]
         self.assertListEqual(expected, markdown_parser.extract_markdown_images(text))
+
+    def test_extract_markdown_links(self):
+        markdown_parser = MarkdownParser()
+        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        expected = [
+            ("link", "https://www.example.com"),
+            ("another", "https://www.example.com/another")
+        ]
+
+        self.assertListEqual(expected, markdown_parser.extract_markdown_links(text))

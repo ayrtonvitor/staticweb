@@ -28,6 +28,10 @@ class MarkdownParser:
         image_pattern = r"!\[(.*?)\]\((.*?)\)"
         return re.findall(image_pattern, text)
 
+    def extract_markdown_links(self, text):
+        link_pattern = r"\[(.*?)\]\((.*?)\)"
+        return re.findall(link_pattern, text)
+
 markdown_code_delimiter = '`'
 markdown_bold_delimiter = '**'
 markdown_italic_delimiter = '*'
