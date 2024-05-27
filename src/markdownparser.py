@@ -1,5 +1,6 @@
 from textnode import TextNode
 from textnode import text_type_italic
+import re
 
 class MarkdownParser:
     def split_nodes_delimiter(self, old_nodes, delimiter, text_type):
@@ -22,6 +23,10 @@ class MarkdownParser:
                 yield TextNode(block, text_type)
             else:
                 yield TextNode(block, node.text_type)
+
+    def extract_markdown_images(self, text):
+        image_pattern = r"!\[(.*?)\]\((.*?)\)"
+        return re.findall(image_pattern, text)
 
 markdown_code_delimiter = '`'
 markdown_bold_delimiter = '**'

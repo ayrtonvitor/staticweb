@@ -103,3 +103,18 @@ class TestMarkdownParser(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             markdown_parser.split_nodes_delimiter([node], markdown_code_delimiter, text_type_code)
         self.assertEqual(str(cm.exception), f"Tag {markdown_code_delimiter} is not closed")
+
+    def test_extract_markdown_images(self):
+        markdown_parser = MarkdownParser()
+        text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+        expected = [
+            (
+                "image",
+                "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"
+             ),
+            (
+                "another",
+                "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png"
+            )
+        ]
+        self.assertListEqual(expected, markdown_parser.extract_markdown_images(text))
