@@ -17,7 +17,6 @@ class MarkdownParser:
             new_nodes.extend(self.get_inner_nodes(node, delimiter, text_type))
 
         self.nodes = new_nodes
-        return self.nodes
 
     def get_inner_nodes(self, node, delimiter, text_type):
         if text_type == text_type_italic and markdown_bold_delimiter in node.text:
@@ -33,21 +32,21 @@ class MarkdownParser:
             else:
                 yield TextNode(block, node.text_type)
 
-    def split_nodes_long_pattern(self, old_nodes, text_type):
+    def split_nodes_long_pattern(self, text_type):
         new_nodes = []
-        for node in old_nodes:
+        for node in self.nodes:
             if node.text_type != text_type_text:
                 new_nodes.append(node)
             else:
                 new_nodes.extend(
                     self.get_inner_nodes_single_delimeter(node, text_type))
-        return new_nodes
+        self.nodes = new_nodes
 
-    def split_nodes_link(self, old_nodes):
-        return self.split_nodes_long_pattern(old_nodes, text_type_link)
+    def split_nodes_link(self):
+        self.split_nodes_long_pattern(text_type_link)
 
-    def split_nodes_image(self, old_nodes):
-        return self.split_nodes_long_pattern(old_nodes, text_type_image)
+    def split_nodes_image(self):
+        self.split_nodes_long_pattern( text_type_image)
 
     def get_inner_nodes_single_delimeter(self, node, text_type):
         matches = MarkdownParser.get_matches(text_type, node.text)
