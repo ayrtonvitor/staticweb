@@ -55,12 +55,11 @@ class MarkdownParser:
         self.split_nodes_long_pattern( text_type_image)
 
     def get_inner_nodes_single_delimeter(self, node, text_type):
-        matches = MarkdownParser.get_matches(text_type, node.text)
-        delimiter_builder = MarkdownParser._delimiters[text_type]
+        matches = self._get_matches(text_type, node.text)
 
         to_split = node.text
         for body, ref in matches:
-            delimiter = delimiter_builder(body, ref)
+            delimiter = self._get_delimiter(body, ref, text_type)
             split = to_split.split(delimiter, 1)
 
             yield TextNode(split[0], text_type_text)
@@ -79,23 +78,24 @@ class MarkdownParser:
         self.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
         return self.nodes
 
-    _image_pattern = r"!\[(.*?)\]\((.*?)\)"
-    _link_pattern = r"\[(.*?)\]\((.*?)\)"
+    def _get_delimiter(self, body, ref, text_type):
+        if text_type == text_type_image:
+            return self._as_image(body, ref)
+        if text_type == text_type_link:
+            return self._as_link(body, ref)
 
-    def get_matches(text_type, text):
-        pattern = MarkdownParser._image_pattern if text_type == text_type_image else MarkdownParser._link_pattern
+
+    def _get_matches(self, text_type, text):
+        image_pattern = r"!\[(.*?)\]\((.*?)\)"
+        link_pattern = r"\[(.*?)\]\((.*?)\)"
+        pattern = image_pattern if text_type == text_type_image else link_pattern
         return re.findall(pattern, text)
 
-    def _as_image(body, ref):
+    def _as_image(self, body, ref):
         return f'![{body}]({ref})'
 
-    def _as_link(body, ref):
+    def _as_link(self, body, ref):
         return f'[{body}]({ref})'
-
-    _delimiters = {
-        text_type_image : _as_image,
-        text_type_link : _as_link
-    }
 
 markdown_code_delimiter = '`'
 markdown_bold_delimiter = '**'
