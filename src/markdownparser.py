@@ -33,9 +33,10 @@ class MarkdownParser:
         new_nodes = []
         for node in old_nodes:
             if node.text_type != text_type_text:
-                raise ValueError("Cannot embed an image inside a non text chunk")
-            new_nodes.extend(
-                self.get_inner_nodes_single_delimeter(node, text_type))
+                new_nodes.append(node)
+            else:
+                new_nodes.extend(
+                    self.get_inner_nodes_single_delimeter(node, text_type))
         return new_nodes
 
     def split_nodes_link(self, old_nodes):
