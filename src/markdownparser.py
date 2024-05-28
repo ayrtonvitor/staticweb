@@ -1,5 +1,7 @@
 from textnode import (
     TextNode,
+    text_type_bold,
+    text_type_code,
     text_type_image,
     text_type_italic,
     text_type_link,
@@ -14,13 +16,17 @@ class MarkdownParser:
     def split_nodes_delimiter(self, delimiter, text_type):
         new_nodes = []
         for node in self.nodes:
-            new_nodes.extend(self.get_inner_nodes(node, delimiter, text_type))
+            if node.text_type in (text_type_code, text_type_link, text_type_image):
+                new_nodes.append(node)
+            else:
+                new_nodes.extend(self.get_inner_nodes(node, delimiter, text_type))
 
         self.nodes = new_nodes
 
     def get_inner_nodes(self, node, delimiter, text_type):
         if text_type == text_type_italic and markdown_bold_delimiter in node.text:
             raise ValueError("Cannot process italic before processing bold")
+
         blocks = node.text.split(delimiter)
         if len(blocks) % 2 == 0:
             raise ValueError(
@@ -64,6 +70,14 @@ class MarkdownParser:
 
         if to_split:
             yield TextNode(to_split, text_type_text)
+
+    def text_to_textnodes(self):
+        self.split_nodes_image()
+        self.split_nodes_link()
+        self.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
+        self.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
+        self.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
+        return self.nodes
 
     _image_pattern = r"!\[(.*?)\]\((.*?)\)"
     _link_pattern = r"\[(.*?)\]\((.*?)\)"
