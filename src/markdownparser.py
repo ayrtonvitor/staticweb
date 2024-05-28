@@ -8,12 +8,16 @@ from textnode import (
 import re
 
 class MarkdownParser:
-    def split_nodes_delimiter(self, old_nodes, delimiter, text_type):
+    def __init__(self, node):
+        self.nodes = [node]
+
+    def split_nodes_delimiter(self, delimiter, text_type):
         new_nodes = []
-        for node in old_nodes:
+        for node in self.nodes:
             new_nodes.extend(self.get_inner_nodes(node, delimiter, text_type))
 
-        return new_nodes
+        self.nodes = new_nodes
+        return self.nodes
 
     def get_inner_nodes(self, node, delimiter, text_type):
         if text_type == text_type_italic and markdown_bold_delimiter in node.text:

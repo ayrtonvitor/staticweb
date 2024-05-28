@@ -19,9 +19,9 @@ from textnode import (
 
 class TestMarkdownParser(unittest.TestCase):
     def test_split_nodes_delimiter_code(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a `code block` word", text_type_text)
-        new_nodes = markdown_parser.split_nodes_delimiter([node], markdown_code_delimiter, text_type_code)
+        markdown_parser = MarkdownParser(node)
+        new_nodes = markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
 
         expected = [
             TextNode("This is text with a ", text_type_text),
@@ -32,9 +32,9 @@ class TestMarkdownParser(unittest.TestCase):
 
 
     def test_split_nodes_delimiter_bold(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a **bold block** word", text_type_text)
-        new_nodes = markdown_parser.split_nodes_delimiter([node], markdown_bold_delimiter, text_type_bold)
+        markdown_parser = MarkdownParser(node)
+        new_nodes = markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
 
         expected = [
             TextNode("This is text with a ", text_type_text),
@@ -44,9 +44,9 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertListEqual(new_nodes, expected)
 
     def test_split_nodes_delimiter_italic(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a *italic block* word", text_type_text)
-        new_nodes = markdown_parser.split_nodes_delimiter([node], markdown_italic_delimiter, text_type_italic)
+        markdown_parser = MarkdownParser(node)
+        new_nodes = markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
         expected = [
             TextNode("This is text with a ", text_type_text),
@@ -56,9 +56,9 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertListEqual(new_nodes, expected)
 
     def test_split_nodes_delimiter_italic_and_bold(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        bold_nodes = markdown_parser.split_nodes_delimiter([node], markdown_bold_delimiter, text_type_bold)
+        markdown_parser = MarkdownParser(node)
+        bold_nodes = markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
 
         expected_bold = [
             TextNode("This is text with a *italic block* and ", text_type_text),
@@ -68,10 +68,10 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertListEqual(bold_nodes, expected_bold)
 
     def test_split_nodes_delimiter_italic_after_bold(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        bold_nodes = markdown_parser.split_nodes_delimiter([node], markdown_bold_delimiter, text_type_bold)
-        italic_nodes = markdown_parser.split_nodes_delimiter(bold_nodes, markdown_italic_delimiter, text_type_italic)
+        markdown_parser = MarkdownParser(node)
+        markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
+        italic_nodes = markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
         expected_italic = [
             TextNode("This is text with a ", text_type_text),
@@ -83,36 +83,36 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertListEqual(expected_italic, italic_nodes)
 
     def test_split_nodes_delimiter_italic_before_bold(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
+        markdown_parser = MarkdownParser(node)
         with self.assertRaises(ValueError) as cm:
-            markdown_parser.split_nodes_delimiter([node], markdown_italic_delimiter, text_type_italic)
+            markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
         self.assertEqual(str(cm.exception), "Cannot process italic before processing bold")
 
     def test_split_nodes_delimiter_no_del_in_text(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
+        markdown_parser = MarkdownParser(node)
 
-        result = markdown_parser.split_nodes_delimiter([node], markdown_code_delimiter, text_type_code)
+        result = markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
         self.assertListEqual([node], result)
 
     def test_split_nodes_delimiter_missing_matching_delimiter(self):
-        markdown_parser = MarkdownParser()
         node = TextNode("This is text with a `code block without a matching delimiter", text_type_text)
+        markdown_parser = MarkdownParser(node)
 
         with self.assertRaises(ValueError) as cm:
-            markdown_parser.split_nodes_delimiter([node], markdown_code_delimiter, text_type_code)
+            markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
         self.assertEqual(str(cm.exception), f"Tag {markdown_code_delimiter} is not closed")
 
     def test_split_nodes_images(self):
-        markdown_parser = MarkdownParser()
         node = TextNode(
                 "This is text with an ![image](https://storage.googleapis.com/"
                 + "qvault-webapp-dynamic-assets/course_assets/zzjjcJKZ.png) and another"
                 + " ![second image](https://storage.googleapis.com/qvault-webapp-"
                 + "dynamic-assets/course_assets/3elNhQu.png)",
                 text_type_text)
+        markdown_parser = MarkdownParser(node)
         new_nodes = markdown_parser.split_nodes_image([node])
 
         expected = [
@@ -126,11 +126,11 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertListEqual(new_nodes, expected)
 
     def test_split_nodes_links(self):
-        markdown_parser = MarkdownParser()
         node = TextNode(
                 "This is text with a [link](https://www.abc.com) and another"
                 + " [second link](https://www.google.com)",
                 text_type_text)
+        markdown_parser = MarkdownParser(node)
         new_nodes = markdown_parser.split_nodes_link([node])
 
         expected = [
