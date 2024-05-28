@@ -1,3 +1,4 @@
+from types import new_class
 import unittest
 from markdownparser import (
     MarkdownParser,
@@ -104,27 +105,39 @@ class TestMarkdownParser(unittest.TestCase):
             markdown_parser.split_nodes_delimiter([node], markdown_code_delimiter, text_type_code)
         self.assertEqual(str(cm.exception), f"Tag {markdown_code_delimiter} is not closed")
 
-    def test_extract_markdown_images(self):
+    def test_split_nodes_images(self):
         markdown_parser = MarkdownParser()
-        text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
-        expected = [
-            (
-                "image",
-                "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"
-             ),
-            (
-                "another",
-                "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png"
-            )
-        ]
-        self.assertListEqual(expected, markdown_parser.extract_markdown_images(text))
+        node = TextNode(
+                "This is text with an ![image](https://storage.googleapis.com/"
+                + "qvault-webapp-dynamic-assets/course_assets/zzjjcJKZ.png) and another"
+                + " ![second image](https://storage.googleapis.com/qvault-webapp-"
+                + "dynamic-assets/course_assets/3elNhQu.png)",
+                text_type_text)
+        new_nodes = markdown_parser.split_nodes_image([node])
 
-    def test_extract_markdown_links(self):
+        expected = [
+            TextNode("This is text with an ", text_type_text),
+            TextNode("image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zzjjcJKZ.png"),
+            TextNode(" and another ", text_type_text),
+            TextNode(
+                "second image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"
+            ),
+        ]
+        self.assertListEqual(new_nodes, expected)
+
+    def test_split_nodes_links(self):
         markdown_parser = MarkdownParser()
-        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
-        expected = [
-            ("link", "https://www.example.com"),
-            ("another", "https://www.example.com/another")
-        ]
+        node = TextNode(
+                "This is text with a [link](https://www.abc.com) and another"
+                + " [second link](https://www.google.com)",
+                text_type_text)
+        new_nodes = markdown_parser.split_nodes_link([node])
 
-        self.assertListEqual(expected, markdown_parser.extract_markdown_links(text))
+        expected = [
+            TextNode("This is text with a ", text_type_text),
+            TextNode("link", text_type_link, "https://www.abc.com"),
+            TextNode(" and another ", text_type_text),
+            TextNode("second link", text_type_link, "https://www.google.com"
+            ),
+        ]
+        self.assertListEqual(new_nodes, expected)

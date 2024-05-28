@@ -1,5 +1,10 @@
-from textnode import TextNode
-from textnode import text_type_italic
+from textnode import (
+    TextNode,
+    text_type_image,
+    text_type_italic,
+    text_type_link,
+    text_type_text
+)
 import re
 
 class MarkdownParser:
@@ -24,13 +29,55 @@ class MarkdownParser:
             else:
                 yield TextNode(block, node.text_type)
 
-    def extract_markdown_images(self, text):
-        image_pattern = r"!\[(.*?)\]\((.*?)\)"
-        return re.findall(image_pattern, text)
+    def split_nodes_long_pattern(self, old_nodes, text_type):
+        new_nodes = []
+        for node in old_nodes:
+            if node.text_type != text_type_text:
+                raise ValueError("Cannot embed an image inside a non text chunk")
+            new_nodes.extend(
+                self.get_inner_nodes_single_delimeter(node, text_type))
+        return new_nodes
 
-    def extract_markdown_links(self, text):
-        link_pattern = r"\[(.*?)\]\((.*?)\)"
-        return re.findall(link_pattern, text)
+    def split_nodes_link(self, old_nodes):
+        return self.split_nodes_long_pattern(old_nodes, text_type_link)
+
+    def split_nodes_image(self, old_nodes):
+        return self.split_nodes_long_pattern(old_nodes, text_type_image)
+
+    def get_inner_nodes_single_delimeter(self, node, text_type):
+        matches = MarkdownParser.get_matches(text_type, node.text)
+        delimiter_builder = MarkdownParser._delimiters[text_type]
+
+        to_split = node.text
+        for body, ref in matches:
+            delimiter = delimiter_builder(body, ref)
+            split = to_split.split(delimiter, 1)
+
+            yield TextNode(split[0], text_type_text)
+            yield TextNode(body, text_type, ref)
+
+            to_split = split[1] if len(split) > 1 else ''
+
+        if to_split:
+            yield TextNode(to_split, text_type_text)
+
+    _image_pattern = r"!\[(.*?)\]\((.*?)\)"
+    _link_pattern = r"\[(.*?)\]\((.*?)\)"
+
+    def get_matches(text_type, text):
+        pattern = MarkdownParser._image_pattern if text_type == text_type_image else MarkdownParser._link_pattern
+        return re.findall(pattern, text)
+
+    def _as_image(body, ref):
+        return f'![{body}]({ref})'
+
+    def _as_link(body, ref):
+        return f'[{body}]({ref})'
+
+    _delimiters = {
+        text_type_image : _as_image,
+        text_type_link : _as_link
+    }
 
 markdown_code_delimiter = '`'
 markdown_bold_delimiter = '**'
