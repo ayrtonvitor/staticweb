@@ -1,7 +1,6 @@
-from types import new_class
 import unittest
-from markdownparser import (
-    MarkdownParser,
+from inlinemarkdownparser import (
+    InlineMarkDownParser,
     markdown_bold_delimiter,
     markdown_code_delimiter,
     markdown_italic_delimiter,
@@ -17,10 +16,10 @@ from textnode import (
     text_type_image,
 )
 
-class TestMarkdownParser(unittest.TestCase):
+class TestInlineMarkDownParser(unittest.TestCase):
     def test_split_nodes_delimiter_code(self):
         node = TextNode("This is text with a `code block` word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
 
         expected = [
@@ -33,7 +32,7 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_bold(self):
         node = TextNode("This is text with a **bold block** word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
 
         expected = [
@@ -45,7 +44,7 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_italic(self):
         node = TextNode("This is text with a *italic block* word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
         expected = [
@@ -57,7 +56,7 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_italic_and_bold(self):
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
 
         expected_bold = [
@@ -69,7 +68,7 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_italic_after_bold(self):
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_delimiter(markdown_bold_delimiter, text_type_bold)
         markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
@@ -84,7 +83,7 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_italic_before_bold(self):
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         with self.assertRaises(ValueError) as cm:
             markdown_parser.split_nodes_delimiter(markdown_italic_delimiter, text_type_italic)
 
@@ -92,14 +91,14 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_split_nodes_delimiter_no_del_in_text(self):
         node = TextNode("This is text with a *italic block* and **bold** word", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
 
         markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
         self.assertListEqual([node], markdown_parser.nodes)
 
     def test_split_nodes_delimiter_missing_matching_delimiter(self):
         node = TextNode("This is text with a `code block without a matching delimiter", text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
 
         with self.assertRaises(ValueError) as cm:
             markdown_parser.split_nodes_delimiter(markdown_code_delimiter, text_type_code)
@@ -112,7 +111,7 @@ class TestMarkdownParser(unittest.TestCase):
                 + " ![second image](https://storage.googleapis.com/qvault-webapp-"
                 + "dynamic-assets/course_assets/3elNhQu.png)",
                 text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_image()
 
         expected = [
@@ -130,7 +129,7 @@ class TestMarkdownParser(unittest.TestCase):
                 "This is text with a [link](https://www.abc.com) and another"
                 + " [second link](https://www.google.com)",
                 text_type_text)
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         markdown_parser.split_nodes_link()
 
         expected = [
@@ -149,7 +148,7 @@ class TestMarkdownParser(unittest.TestCase):
             + "/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)",
             text_type_text
         )
-        markdown_parser = MarkdownParser(node)
+        markdown_parser = InlineMarkDownParser(node)
         new_nodes = markdown_parser.text_to_textnodes()
 
         expected = [

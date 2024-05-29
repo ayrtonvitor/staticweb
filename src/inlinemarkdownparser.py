@@ -9,7 +9,7 @@ from textnode import (
 )
 import re
 
-class MarkdownParser:
+class InlineMarkDownParser:
     def __init__(self, node):
         self.nodes = [node]
 
