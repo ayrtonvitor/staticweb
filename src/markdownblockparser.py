@@ -1,4 +1,7 @@
+import re
+
 class MarkdownBlockParser:
+
     def __init__(self, raw_markdown):
         self.raw_markdown = raw_markdown
         self.blocks = []
@@ -18,7 +21,14 @@ class MarkdownBlockParser:
             self.set_block_type_from_content(block)
 
     def set_block_type_from_content(self, block):
-        block['type'] = block_type_paragraph
+        if self.is_heading(block):
+            block['type'] = block_type_heading
+        else:
+            block['type'] = block_type_paragraph
+
+    def is_heading(self, block):
+        heading_pattern = r'^#{1,6} \S.*'
+        return re.match(heading_pattern, block['content'])
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"

@@ -82,3 +82,27 @@ class TestMarkdownBlockParser(unittest.TestCase):
             block_type_paragraph
         ]
         self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
+
+    def test_markdown_to_block_type_heading(self):
+        raw_markdown = (
+            '# This is a heading 1\n\n'
+            + '## This is a heading 2\n\n'
+            + '### This is a heading 3\n\n'
+            + '#### This is a heading 4\n\n'
+            + '##### This is a heading 5\n\n'
+            + '###### This is a heading 6'
+
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.blocks_to_block_type()
+
+        expected = [
+            block_type_heading,
+            block_type_heading,
+            block_type_heading,
+            block_type_heading,
+            block_type_heading,
+            block_type_heading
+        ]
+        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
