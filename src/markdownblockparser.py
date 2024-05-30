@@ -8,14 +8,27 @@ class MarkdownBlockParser:
 
     def markdown_to_blocks(self):
         curr = ""
-        for par in self.raw_markdown.split('\n'):
-            if par:
-                curr += par.strip() + '\n'
+        for line in self.raw_markdown.split('\n'):
+            line, curr = self.add_to_blocks_list_if_heading(line, curr)
+            if line:
+                curr += line.strip() + '\n'
             elif curr:
-                self.blocks.append({ 'content': curr.strip() })
+                self.add_to_blocks_list(curr)
                 curr = ""
         if re.search(r'\S', curr) is not None:
-            self.blocks.append({ 'content': curr.strip() })
+            self.add_to_blocks_list(curr)
+
+    def add_to_blocks_list(self, line):
+        self.blocks.append({ 'content': line.strip() })
+
+    def add_to_blocks_list_if_heading(self, line, curr):
+        if self.is_heading({ 'content': line.strip() }):
+            if re.search(r'\S', curr) is not None:
+                self.add_to_blocks_list(curr)
+                curr = ""
+            self.add_to_blocks_list(line)
+            line = ""
+        return line, curr
 
     def blocks_to_block_type(self):
         for block in self.blocks:
@@ -29,7 +42,7 @@ class MarkdownBlockParser:
 
     def is_heading(self, block):
         heading_pattern = r'^#{1,6} \S.*'
-        return re.match(heading_pattern, block['content'])
+        return re.match(heading_pattern, block['content']) is not None
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
