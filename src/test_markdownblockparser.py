@@ -41,3 +41,25 @@ class TestMarkdownBlockParser(unittest.TestCase):
             + 'space'
         ]
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_blocks_removes_excessive_new_lines(self):
+        raw_markdown = (
+            'This is a paragraph\n'
+            + 'that continues with a bunch of new lines\n\n\n\n\n'
+
+            + 'New lines are really fun!\n\n\n'
+
+            + 'Enough!'
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+
+        expected = [
+            'This is a paragraph\n'
+            + 'that continues with a bunch of new lines',
+
+            'New lines are really fun!',
+
+            'Enough!'
+        ]
+        self.assertListEqual(expected, parser.blocks)
