@@ -19,3 +19,25 @@ class TestMarkdownBlockParser(unittest.TestCase):
         ]
 
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_blocks_removes_leading_and_trailing_whitespaces(self):
+        raw_markdown = (
+            'This is a paragraph\n'
+            + 'and its continuation\n\n'
+
+            + '\tAnother paragraph, but with\n'
+            + '   extra\n'
+            + 'space  '
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+
+        expected = [
+            'This is a paragraph\n'
+            + 'and its continuation',
+
+            'Another paragraph, but with\n'
+            + 'extra\n'
+            + 'space'
+        ]
+        self.assertListEqual(expected, parser.blocks)

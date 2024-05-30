@@ -7,8 +7,8 @@ class MarkdownBlockParser:
         curr = ""
         for par in self.raw_markdown.split('\n'):
             if par:
-                curr += par + '\n'
+                curr += par.strip() + '\n'
             elif curr:
-                self.blocks.append(curr[:-1])
+                self.blocks.append(curr.strip())
                 curr = ""
-        self.blocks.append(curr[:-1])
+        self.blocks.append(curr.strip())
