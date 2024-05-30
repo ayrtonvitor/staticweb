@@ -91,11 +91,11 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.blocks_to_block_type()
 
         expected = [
-            block_type_paragraph,
-            block_type_paragraph,
-            block_type_paragraph
+            { 'content': 'This is a paragraph', 'type': block_type_paragraph },
+            { 'content': 'And another paragraph', 'type': block_type_paragraph },
+            { 'content': 'Nothing special about any of us', 'type': block_type_paragraph },
         ]
-        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
+        self.assertListEqual(expected, parser.blocks)
 
     def test_markdown_to_block_type_heading(self):
         raw_markdown = (
@@ -105,21 +105,20 @@ class TestMarkdownBlockParser(unittest.TestCase):
             + '#### This is a heading 4\n\n'
             + '##### This is a heading 5\n\n'
             + '###### This is a heading 6'
-
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
         parser.blocks_to_block_type()
 
         expected = [
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading
+            { 'content': '# This is a heading 1', 'type': block_type_heading },
+            { 'content': '## This is a heading 2', 'type': block_type_heading },
+            { 'content': '### This is a heading 3', 'type': block_type_heading },
+            { 'content': '#### This is a heading 4', 'type': block_type_heading },
+            { 'content': '##### This is a heading 5', 'type': block_type_heading },
+            { 'content': '###### This is a heading 6', 'type': block_type_heading },
         ]
-        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
+        self.assertListEqual(expected, parser.blocks)
 
     def test_markdown_to_block_type_heading_simple_new_line(self):
         raw_markdown = (
@@ -129,21 +128,20 @@ class TestMarkdownBlockParser(unittest.TestCase):
             + '#### This is a heading 4\n'
             + '##### This is a heading 5\n'
             + '###### This is a heading 6'
-
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
         parser.blocks_to_block_type()
 
         expected = [
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading
+            { 'content': '# This is a heading 1', 'type': block_type_heading },
+            { 'content': '## This is a heading 2', 'type': block_type_heading },
+            { 'content': '### This is a heading 3', 'type': block_type_heading },
+            { 'content': '#### This is a heading 4', 'type': block_type_heading },
+            { 'content': '##### This is a heading 5', 'type': block_type_heading },
+            { 'content': '###### This is a heading 6', 'type': block_type_heading },
         ]
-        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
+        self.assertListEqual(expected, parser.blocks)
 
     def test_markdown_to_block_type_heading_and_paragraphs(self):
         raw_markdown = (
@@ -155,20 +153,19 @@ class TestMarkdownBlockParser(unittest.TestCase):
             + 'And this is a paragraph with two new lines\n\n'
             + '##### This is a heading 5\n'
             + '###### This is a heading 6\n\n'
-
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
         parser.blocks_to_block_type()
 
         expected = [
-            block_type_heading,
-            block_type_paragraph,
-            block_type_heading,
-            block_type_heading,
-            block_type_heading,
-            block_type_paragraph,
-            block_type_heading,
-            block_type_heading
+            { 'content': '# This is a heading 1', 'type': block_type_heading },
+            { 'content': 'This is a paragraph with a simple new line', 'type': block_type_paragraph },
+            { 'content': '## This is a heading 2', 'type': block_type_heading },
+            { 'content': '### This is a heading 3', 'type': block_type_heading },
+            { 'content': '#### This is a heading 4', 'type': block_type_heading },
+            { 'content': 'And this is a paragraph with two new lines', 'type': block_type_paragraph },
+            { 'content': '##### This is a heading 5', 'type': block_type_heading },
+            { 'content': '###### This is a heading 6', 'type': block_type_heading },
         ]
-        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
+        self.assertListEqual(expected, parser.blocks)
