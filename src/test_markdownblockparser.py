@@ -26,6 +26,20 @@ class TestMarkdownBlockParser(unittest.TestCase):
 
         self.assertListEqual(expected, parser.blocks)
 
+    def test_markdown_to_blocks_new_line_ending(self):
+        raw_markdown = "This md ends with new lines\n\n\n"
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+
+        expected = [ { 'content' : 'This md ends with new lines' } ]
+
+        self.assertListEqual(expected, parser.blocks)
+
+        raw_markdown += '\n'
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        self.assertListEqual(expected, parser.blocks)
+
     def test_markdown_to_blocks_removes_leading_and_trailing_whitespaces(self):
         raw_markdown = (
             'This is a paragraph\n'

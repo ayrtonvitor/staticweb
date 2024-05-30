@@ -14,7 +14,8 @@ class MarkdownBlockParser:
             elif curr:
                 self.blocks.append({ 'content': curr.strip() })
                 curr = ""
-        self.blocks.append({ 'content': curr.strip() })
+        if re.search(r'\S', curr) is not None:
+            self.blocks.append({ 'content': curr.strip() })
 
     def blocks_to_block_type(self):
         for block in self.blocks:
