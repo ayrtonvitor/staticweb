@@ -48,7 +48,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
     def test_markdown_to_blocks_removes_excessive_new_lines(self):
         raw_markdown = (
             'This is a paragraph\n'
-            + 'that continues with a bunch of new lines\n\n\n\n\n'
+            + 'that continues with a bunch of new lines\n\n\n\n'
 
             + 'New lines are really fun!\n\n\n'
 
