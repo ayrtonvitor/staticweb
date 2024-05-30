@@ -1,5 +1,13 @@
 import unittest
-from markdownblockparser import MarkdownBlockParser
+from markdownblockparser import (
+    MarkdownBlockParser,
+    block_type_code,
+    block_type_heading,
+    block_type_ordered_list,
+    block_type_paragraph,
+    block_type_quote,
+    block_type_unordered_list
+)
 
 class TestMarkdownBlockParser(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -11,11 +19,9 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.markdown_to_blocks()
 
         expected = [
-            "This is **bolded** paragraph",
-
-            "This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line",
-
-            "* This is a list\n* with items"
+            { 'content': "This is **bolded** paragraph" },
+            { 'content': "This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line" },
+            { 'content': "* This is a list\n* with items" }
         ]
 
         self.assertListEqual(expected, parser.blocks)
@@ -33,12 +39,9 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.markdown_to_blocks()
 
         expected = [
-            'This is a paragraph\n'
-            + 'and its continuation',
+            { 'content': 'This is a paragraph\nand its continuation' },
 
-            'Another paragraph, but with\n'
-            + 'extra\n'
-            + 'space'
+            { 'content': 'Another paragraph, but with\nextra\nspace' }
         ]
         self.assertListEqual(expected, parser.blocks)
 
@@ -55,11 +58,27 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.markdown_to_blocks()
 
         expected = [
-            'This is a paragraph\n'
-            + 'that continues with a bunch of new lines',
-
-            'New lines are really fun!',
-
-            'Enough!'
+            { 'content': 'This is a paragraph\nthat continues with a bunch of new lines' },
+            { 'content': 'New lines are really fun!' },
+            { 'content': 'Enough!' }
         ]
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_paragraph(self):
+        raw_markdown = (
+            'This is a paragraph\n\n'
+
+            + 'And another paragraph\n\n'
+
+            + 'Nothing special about any of us'
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.blocks_to_block_type()
+
+        expected = [
+            block_type_paragraph,
+            block_type_paragraph,
+            block_type_paragraph
+        ]
+        self.assertListEqual(expected, list(map(lambda x: x['type'], parser.blocks)))
