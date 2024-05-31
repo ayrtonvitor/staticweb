@@ -14,14 +14,14 @@ class MarkdownBlockParser:
     def pre_process_md(self, raw_markdown):
         raw_markdown = '\n' + raw_markdown + '\n'
 
-        special_patterns = r'(\n(?:```|#{1,6} ).*?)\n'
+        special_patterns = r'(\n?(?:```|#{1,6} ).*?)\n'
         replacement = r'\n\1\n\n'
         raw_markdown = re.sub(special_patterns, replacement, raw_markdown)
 
-        tokens = ['*', '-', '>', r'[1-9]\.']
+        tokens = [r'\*', '-', '>', r'[1-9]\.']
         for token in tokens:
-            special_patterns = rf'(\n(?:{token} ).*?\n)(?!\* )'
-        raw_markdown = re.sub(special_patterns, replacement, raw_markdown)
+            special_patterns = rf'((?:\n{token} [^\n]*)+)(?=\n(?!\* ))'
+            raw_markdown = re.sub(special_patterns, replacement, raw_markdown)
 
         return raw_markdown
 

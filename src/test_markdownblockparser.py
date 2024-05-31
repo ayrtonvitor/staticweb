@@ -183,7 +183,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         raw_markdown = '```This is a code block```'
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': 'This is a code block', 'type': block_type_code },
@@ -198,7 +198,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': '# Something previously', 'type': block_type_heading },
