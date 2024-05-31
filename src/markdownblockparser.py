@@ -37,19 +37,49 @@ class MarkdownBlockParser:
             if curr:
                 self.blocks.append({ 'content': curr[:-1] })
 
-    def blocks_to_block_type(self):
+    def process_block_type(self):
+        processed = []
+        curr = {}
         for block in self.blocks:
-            self.set_block_type_from_content(block)
+            if curr.get('type', block_type_paragraph) == block_type_code:
+                curr['content'] += block['content']
+                if self.block_ends_code(curr):
+                    curr['content'] = curr['content'][3:-3]
+                    processed.append(curr)
+                    curr = {}
+            else:
+                block_type = self.get_block_processing_type(block)
+                block['type'] = block_type
 
-    def set_block_type_from_content(self, block):
+                if (block_type == block_type_code and self.block_ends_code(block)):
+                    if len(block['content']) < 6:
+                        raise ValueError("Could not find proper closing of the code block")
+                    block['content'] = block['content'][3:-3]
+                    processed.append(block)
+                elif block_type != block_type_code:
+                    processed.append(block)
+                else:
+                    curr = block
+
+        self.blocks = processed
+
+    def get_block_processing_type(self, block):
         if self.is_heading(block):
-            block['type'] = block_type_heading
+            return block_type_heading
+        elif self.block_starts_code(block):
+            return block_type_code
         else:
-            block['type'] = block_type_paragraph
+            return block_type_paragraph
 
     def is_heading(self, block):
         heading_pattern = r'^#{1,6} \S.*'
         return re.match(heading_pattern, block['content']) is not None
+
+    def block_starts_code(self, block):
+        return block['content'][:3] == '```'
+
+    def block_ends_code(self, block):
+        return block['content'][-3:] == '```'
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"

@@ -95,7 +95,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': 'This is a paragraph', 'type': block_type_paragraph },
@@ -115,7 +115,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': '# This is a heading 1', 'type': block_type_heading },
@@ -138,7 +138,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': '# This is a heading 1', 'type': block_type_heading },
@@ -164,7 +164,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
-        parser.blocks_to_block_type()
+        parser.process_block_type()
 
         expected = [
             { 'content': '# This is a heading 1', 'type': block_type_heading },
