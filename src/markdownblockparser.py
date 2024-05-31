@@ -41,27 +41,26 @@ class MarkdownBlockParser:
         processed = []
         curr = {}
         for block in self.blocks:
-            if curr.get('type', block_type_paragraph) == block_type_code:
-                curr['content'] += block['content']
-                if self.block_ends_code(curr):
-                    curr['content'] = curr['content'][3:-3]
-                    processed.append(curr)
-                    curr = {}
-            else:
-                block_type = self.get_block_processing_type(block)
-                block['type'] = block_type
+            block_type = curr['type'] if curr else self.get_block_processing_type(block)
+            block['type'] = block_type
 
-                if (block_type == block_type_code and self.block_ends_code(block)):
-                    if len(block['content']) < 6:
-                        raise ValueError("Could not find proper closing of the code block")
-                    block['content'] = block['content'][3:-3]
-                    processed.append(block)
-                elif block_type != block_type_code:
-                    processed.append(block)
-                else:
-                    curr = block
+            if block_type == block_type_code:
+                self.process_code_block(curr, block, processed)
+            else:
+                processed.append(block)
 
         self.blocks = processed
+
+    def process_code_block(self, curr, new, processed):
+        curr['content'] = curr.get('content', '') + new['content']
+        if 'type' not in curr:
+            curr['type'] = new['type']
+        if self.block_ends_code(curr):
+            if len(curr['content']) < 6:
+                raise ValueError("Could not find proper closing of the code block")
+            curr['content'] = curr['content'][3:-3]
+            processed.append(curr.copy())
+            curr.clear()
 
     def get_block_processing_type(self, block):
         if self.is_heading(block):
