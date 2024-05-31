@@ -155,6 +155,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
             '# This is a heading 1\n'
             + 'This is a paragraph with a simple new line\n'
             + '## This is a heading 2\n'
+            + 'Another paragraph\n'
             + '### This is a heading 3\n\n'
             + '#### This is a heading 4\n'
             + 'And this is a paragraph with two new lines\n\n'
@@ -169,6 +170,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': '# This is a heading 1', 'type': block_type_heading },
             { 'content': 'This is a paragraph with a simple new line', 'type': block_type_paragraph },
             { 'content': '## This is a heading 2', 'type': block_type_heading },
+            { 'content': 'Another paragraph', 'type': block_type_paragraph },
             { 'content': '### This is a heading 3', 'type': block_type_heading },
             { 'content': '#### This is a heading 4', 'type': block_type_heading },
             { 'content': 'And this is a paragraph with two new lines', 'type': block_type_paragraph },

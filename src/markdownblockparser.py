@@ -12,7 +12,7 @@ class MarkdownBlockParser:
         self.blocks = []
 
     def pre_process_md(self, raw_markdown):
-        raw_markdown += '\n'
+        raw_markdown = '\n' + raw_markdown + '\n'
 
         special_patterns = r'(\n(?:```|#{1,6} ).*?)\n'
         replacement = r'\n\1\n\n'
