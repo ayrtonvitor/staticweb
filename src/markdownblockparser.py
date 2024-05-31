@@ -48,7 +48,8 @@ class MarkdownBlockParser:
                 self.process_code_block(curr, block, processed)
             else:
                 processed.append(block)
-
+        if curr and curr['type'] == block_type_code:
+            raise ValueError("Could not find proper closing of code block")
         self.blocks = processed
 
     def process_code_block(self, curr, new, processed):

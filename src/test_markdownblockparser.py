@@ -213,6 +213,6 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.markdown_to_blocks()
 
         with self.assertRaises(ValueError) as cm:
-            parser.blocks_to_block_type()
+            parser.process_block_type()
         self.assertEqual(str(cm.exception), 'Could not find proper closing of code block')
 
