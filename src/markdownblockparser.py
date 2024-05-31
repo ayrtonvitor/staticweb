@@ -1,6 +1,12 @@
 import re
 
 class MarkdownBlockParser:
+    '''
+    This largely assumes that the markdown is well formated
+    and does not make too much effort in trying to correct problems
+    so there is no guarantee that this parser handles well cases
+    like simple new lines after special blocks
+    '''
     def __init__(self, raw_markdown):
         self.raw_markdown = raw_markdown
         self.blocks = []
