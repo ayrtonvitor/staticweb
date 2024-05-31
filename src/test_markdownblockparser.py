@@ -169,3 +169,41 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': '###### This is a heading 6', 'type': block_type_heading },
         ]
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_code(self):
+        raw_markdown = '```This is a code block```'
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.blocks_to_block_type()
+
+        expected = [
+            { 'content': 'This is a code block', 'type': block_type_code },
+        ]
+        self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_code_enclosed_simple_new_line(self):
+        raw_markdown = (
+            '# Something previously\n'
+            + '```This is a code block```\n'
+            + 'But this is not'
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.blocks_to_block_type()
+
+        expected = [
+            { 'content': '# Something previously', 'type': block_type_heading },
+            { 'content': 'This is a code block', 'type': block_type_code },
+            { 'content': 'But this is not', 'type': block_type_paragraph }
+        ]
+        self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_code_open_block(self):
+        raw_markdown = '```This is a proper code block```\n\n```this code block is not closed.\n\n Raise error``'
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+
+        with self.assertRaises(ValueError) as cm:
+            parser.blocks_to_block_type()
+        self.assertEqual(str(cm.exception), 'Could not find proper closing of code block')
+
