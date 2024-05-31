@@ -45,9 +45,12 @@ class TestMarkdownBlockParser(unittest.TestCase):
             'This is a paragraph\n'
             + 'and its continuation\n\n'
 
-            + '\tAnother paragraph, but with\n'
+            + 'Another paragraph, but with\n'
             + '   extra\n'
-            + 'space  '
+            + 'space  \n\n'
+            + '\tTABs and 4 spaces are tolerated at the beginning\n'
+            + '    because the block can be code, so we need indentation\n\n'
+            + '\nBut not new lines or other spaces\n'
         )
         parser = MarkdownBlockParser(raw_markdown)
         parser.markdown_to_blocks()
@@ -55,7 +58,11 @@ class TestMarkdownBlockParser(unittest.TestCase):
         expected = [
             { 'content': 'This is a paragraph\nand its continuation' },
 
-            { 'content': 'Another paragraph, but with\nextra\nspace' }
+            { 'content': 'Another paragraph, but with\nextra\nspace' },
+
+            { 'content': '\tTABs and 4 spaces are tolerated at the beginning\n' \
+                        '    because the block can be code, so we need indentation' },
+            { 'content': 'But not new lines or other spaces' }
         ]
         self.assertListEqual(expected, parser.blocks)
 

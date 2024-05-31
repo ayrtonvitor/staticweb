@@ -1,34 +1,21 @@
 import re
 
 class MarkdownBlockParser:
-
     def __init__(self, raw_markdown):
         self.raw_markdown = raw_markdown
         self.blocks = []
 
     def markdown_to_blocks(self):
-        curr = ""
-        for line in self.raw_markdown.split('\n'):
-            line, curr = self.add_to_blocks_list_if_heading(line, curr)
-            if line:
-                curr += line.strip() + '\n'
-            elif curr:
-                self.add_to_blocks_list(curr)
-                curr = ""
-        if re.search(r'\S', curr) is not None:
-            self.add_to_blocks_list(curr)
-
-    def add_to_blocks_list(self, line):
-        self.blocks.append({ 'content': line.strip() })
-
-    def add_to_blocks_list_if_heading(self, line, curr):
-        if self.is_heading({ 'content': line.strip() }):
-            if re.search(r'\S', curr) is not None:
-                self.add_to_blocks_list(curr)
-                curr = ""
-            self.add_to_blocks_list(line)
-            line = ""
-        return line, curr
+        for block in self.raw_markdown.split('\n\n'):
+            curr = ""
+            for line in block.split('\n'):
+                line = line.rstrip().lstrip('\n')
+                if line:
+                    if re.match(r'^(?:\t| {4})\w+', line) is None:
+                        line = line.lstrip()
+                    curr += line + '\n'
+            if curr:
+                self.blocks.append({ 'content': curr[:-1] })
 
     def blocks_to_block_type(self):
         for block in self.blocks:
