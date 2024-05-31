@@ -8,8 +8,22 @@ class MarkdownBlockParser:
     like simple new lines after special blocks
     '''
     def __init__(self, raw_markdown):
-        self.raw_markdown = raw_markdown
+        self.raw_markdown = self.pre_process_md(raw_markdown)
         self.blocks = []
+
+    def pre_process_md(self, raw_markdown):
+        raw_markdown += '\n'
+
+        special_patterns = r'(\n(?:```|#{1,6} ).*?)\n'
+        replacement = r'\n\1\n\n'
+        raw_markdown = re.sub(special_patterns, replacement, raw_markdown)
+
+        tokens = ['*', '-', '>', r'[1-9]\.']
+        for token in tokens:
+            special_patterns = rf'(\n(?:{token} ).*?\n)(?!\* )'
+        raw_markdown = re.sub(special_patterns, replacement, raw_markdown)
+
+        return raw_markdown
 
     def markdown_to_blocks(self):
         for block in self.raw_markdown.split('\n\n'):
