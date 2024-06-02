@@ -216,3 +216,12 @@ class TestMarkdownBlockParser(unittest.TestCase):
             parser.process_block_type()
         self.assertEqual(str(cm.exception), 'Could not find proper closing of code block')
 
+    def test_markdown_to_block_type_code_inner_blank_line(self):
+        raw_markdown = '```this is a code block with\n\nempty lines inside\n\n\nends here```'
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.process_block_type()
+        expected = [ { 'content': 'this is a code block with\n\nempty lines inside\n\n\nends here',
+                      'type': block_type_code } ]
+
+        self.assertListEqual(expected, parser.blocks)
