@@ -60,14 +60,14 @@ class MarkdownBlockParser:
         self.blocks = processed
 
     def process_code_block(self, block):
-        if not self.block_ends_code(block) or len(block['content']) < 6:
-            raise ValueError("Could not find proper closing of code block")
-        block['content'] = block['content'].replace(self.new_line_inside_code_token, '\n').strip(' \n`')
+        block['content'] = (block['content']
+            .replace(self.new_line_inside_code_token, '\n')
+            .strip(' \n`'))
 
     def get_block_processing_type(self, block):
         if self.is_heading(block):
             return block_type_heading
-        elif self.block_starts_code(block):
+        elif self.is_code(block):
             return block_type_code
         else:
             return block_type_paragraph
@@ -76,11 +76,11 @@ class MarkdownBlockParser:
         heading_pattern = r'^#{1,6} \S.*'
         return re.match(heading_pattern, block['content']) is not None
 
-    def block_starts_code(self, block):
-        return block['content'][:3] == '```'
-
-    def block_ends_code(self, block):
-        return block['content'][-3:] == '```'
+    def is_code(self, block):
+        if block['content'][:3] == '```':
+            if block['content'][-3:] != "```" or len(block['content']) < 6:
+                raise ValueError("Could not find proper closing of code block")
+            return True
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
