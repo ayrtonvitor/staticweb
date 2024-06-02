@@ -280,14 +280,36 @@ class TestMarkdownBlockParser(unittest.TestCase):
 
         expected = [
             { 'content': 'This is a paragraph', 'type': block_type_paragraph },
-            { 'content': '1. followed by an ordered list', 'type': block_type_ordered_list },
+            {
+                'content': '1. followed by an ordered list',
+                'type': block_type_ordered_list,
+                'items': [ 'followed by an ordered list' ]
+            },
             { 'content': 'Then another paragraph', 'type': block_type_paragraph },
-            { 'content': '1. Then another list', 'type': block_type_ordered_list},
+            {
+                'content': '1. Then another list',
+                'type': block_type_ordered_list,
+                'items': [ 'Then another list' ]
+            },
             { 'content': 'Leading to a header', 'type': block_type_heading, 'level': "1" },
-            { 'content': '1. followed by a\n2.  multi line list', 'type': block_type_ordered_list },
-            { 'content': ('1. and another one\n2. and another two\n'
-                + '3. and another three\n4. and another four\n'
-                + '5. and another five'), 'type': block_type_ordered_list },
+            {
+                'content': '1. followed by a\n2.  multi line list',
+                'type': block_type_ordered_list,
+                'items': [ 'followed by a', ' multi line list' ]
+            },
+            {
+                'content': ('1. and another one\n2. and another two\n'
+                    + '3. and another three\n4. and another four\n'
+                    + '5. and another five'),
+                'type': block_type_ordered_list,
+                'items': [
+                    'and another one',
+                    'and another two',
+                    'and another three',
+                    'and another four',
+                    'and another five'
+                ]
+            },
         ]
         self.assertListEqual(expected, parser.blocks)
 
@@ -314,3 +336,12 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': 'and another one', 'type': block_type_quote },
         ]
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_broken_ordered_list(self):
+        raw_markdown = "1. list 1\n2. list 2\n5. list 5"
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+
+        with self.assertRaises(ValueError) as cm:
+            parser.process_block_type()
+        self.assertEqual(str(cm.exception), 'Ordered list not in order')

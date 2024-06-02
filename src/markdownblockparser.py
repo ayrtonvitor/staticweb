@@ -22,7 +22,7 @@ class MarkdownBlockParser:
             block_type_code: self.process_code_block,
             block_type_quote: self.process_quote_block,
             block_type_unordered_list: self.process_unordered_list,
-            block_type_ordered_list: bypass
+            block_type_ordered_list: self.process_ordered_list
         }
 
     def pre_process_md(self, raw_markdown):
@@ -89,6 +89,16 @@ class MarkdownBlockParser:
     def process_unordered_list(self, block):
         content = '\n' + block['content']
         block['content'] = content.replace('\n* ', '\n').strip()
+
+    def process_ordered_list(self, block):
+        block['items'] = []
+
+        items = re.findall(r'\n([1-9])\. (.*)', '\n'+block['content'])
+        for i, item in enumerate(items):
+            num, text = item
+            if int(num) != i + 1:
+                raise ValueError("Ordered list not in order")
+            block['items'].append(text)
 
     def get_block_processing_type(self, text):
         if self.is_heading(text):
