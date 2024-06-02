@@ -56,6 +56,9 @@ class MarkdownBlockParser:
 
             if block_type == block_type_code:
                 self.process_code_block(block)
+            if block_type == block_type_quote:
+                self.process_quote_block(block)
+
             processed.append(block)
         self.blocks = processed
 
@@ -64,11 +67,17 @@ class MarkdownBlockParser:
             .replace(self.new_line_inside_code_token, '\n')
             .strip(' \n`'))
 
+    def process_quote_block(self, block):
+        content = '\n' + block['content']
+        block['content'] = content.replace('\n> ', '\n').strip()
+
     def get_block_processing_type(self, block):
         if self.is_heading(block):
             return block_type_heading
         elif self.is_code(block):
             return block_type_code
+        elif self.is_quote(block):
+            return block_type_quote
         else:
             return block_type_paragraph
 
@@ -81,6 +90,9 @@ class MarkdownBlockParser:
             if block['content'][-3:] != "```" or len(block['content']) < 6:
                 raise ValueError("Could not find proper closing of code block")
             return True
+
+    def is_quote(self, block):
+        return block['content'][:2] == "> "
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
