@@ -18,7 +18,7 @@ class MarkdownBlockParser:
         bypass = lambda _ : None
         self.block_type_processor ={
             block_type_paragraph: bypass,
-            block_type_heading: bypass,
+            block_type_heading: self.process_header,
             block_type_code: self.process_code_block,
             block_type_quote: self.process_quote_block,
             block_type_unordered_list: self.process_unordered_list,
@@ -29,7 +29,7 @@ class MarkdownBlockParser:
         raw_markdown = '\n' + raw_markdown + '\n'
         replacement = r'\n\n\1\n\n'
 
-        heading_pattern = r'\n((?:#{1,6} ).*?)\n'
+        heading_pattern = r'\n((?:#{1,6} ).+?)\n'
         raw_markdown = re.sub(heading_pattern, replacement, raw_markdown)
 
         code_pattern = r'(```.*?```)'
@@ -71,6 +71,11 @@ class MarkdownBlockParser:
 
             processed.append(block)
         self.blocks = processed
+
+    def process_header(self, block):
+        tag, content = re.findall('(#{1,6} )(.+)$', block['content'])[0]
+        block['content'] = content
+        block['level'] = f"{len(tag) - 1}"
 
     def process_code_block(self, block):
         block['content'] = (block['content']

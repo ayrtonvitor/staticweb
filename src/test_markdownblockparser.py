@@ -118,12 +118,12 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.process_block_type()
 
         expected = [
-            { 'content': '# This is a heading 1', 'type': block_type_heading },
-            { 'content': '## This is a heading 2', 'type': block_type_heading },
-            { 'content': '### This is a heading 3', 'type': block_type_heading },
-            { 'content': '#### This is a heading 4', 'type': block_type_heading },
-            { 'content': '##### This is a heading 5', 'type': block_type_heading },
-            { 'content': '###### This is a heading 6', 'type': block_type_heading },
+            { 'content': 'This is a heading 1', 'type': block_type_heading, 'level': '1' },
+            { 'content': 'This is a heading 2', 'type': block_type_heading, 'level': '2' },
+            { 'content': 'This is a heading 3', 'type': block_type_heading, 'level': '3' },
+            { 'content': 'This is a heading 4', 'type': block_type_heading, 'level': '4' },
+            { 'content': 'This is a heading 5', 'type': block_type_heading, 'level': '5' },
+            { 'content': 'This is a heading 6', 'type': block_type_heading, 'level': '6' },
         ]
         self.assertListEqual(expected, parser.blocks)
 
@@ -141,12 +141,12 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.process_block_type()
 
         expected = [
-            { 'content': '# This is a heading 1', 'type': block_type_heading },
-            { 'content': '## This is a heading 2', 'type': block_type_heading },
-            { 'content': '### This is a heading 3', 'type': block_type_heading },
-            { 'content': '#### This is a heading 4', 'type': block_type_heading },
-            { 'content': '##### This is a heading 5', 'type': block_type_heading },
-            { 'content': '###### This is a heading 6', 'type': block_type_heading },
+            { 'content': 'This is a heading 1', 'type': block_type_heading, 'level': '1' },
+            { 'content': 'This is a heading 2', 'type': block_type_heading, 'level': '2' },
+            { 'content': 'This is a heading 3', 'type': block_type_heading, 'level': '3' },
+            { 'content': 'This is a heading 4', 'type': block_type_heading, 'level': '4' },
+            { 'content': 'This is a heading 5', 'type': block_type_heading, 'level': '5' },
+            { 'content': 'This is a heading 6', 'type': block_type_heading, 'level': '6' },
         ]
         self.assertListEqual(expected, parser.blocks)
 
@@ -167,15 +167,15 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.process_block_type()
 
         expected = [
-            { 'content': '# This is a heading 1', 'type': block_type_heading },
+            { 'content': 'This is a heading 1', 'type': block_type_heading, 'level': '1' },
             { 'content': 'This is a paragraph with a simple new line', 'type': block_type_paragraph },
-            { 'content': '## This is a heading 2', 'type': block_type_heading },
+            { 'content': 'This is a heading 2', 'type': block_type_heading, 'level': '2' },
             { 'content': 'Another paragraph', 'type': block_type_paragraph },
-            { 'content': '### This is a heading 3', 'type': block_type_heading },
-            { 'content': '#### This is a heading 4', 'type': block_type_heading },
+            { 'content': 'This is a heading 3', 'type': block_type_heading, 'level': '3' },
+            { 'content': 'This is a heading 4', 'type': block_type_heading, 'level': '4' },
             { 'content': 'And this is a paragraph with two new lines', 'type': block_type_paragraph },
-            { 'content': '##### This is a heading 5', 'type': block_type_heading },
-            { 'content': '###### This is a heading 6', 'type': block_type_heading },
+            { 'content': 'This is a heading 5', 'type': block_type_heading, 'level': '5' },
+            { 'content': 'This is a heading 6', 'type': block_type_heading, 'level': '6' },
         ]
         self.assertListEqual(expected, parser.blocks)
 
@@ -201,7 +201,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
         parser.process_block_type()
 
         expected = [
-            { 'content': '# Something previously', 'type': block_type_heading },
+            { 'content': 'Something previously', 'type': block_type_heading, 'level': "1" },
             { 'content': 'This is a code block', 'type': block_type_code },
             { 'content': 'But this is not', 'type': block_type_paragraph }
         ]
@@ -254,7 +254,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': 'followed by an unordered list', 'type': block_type_unordered_list },
             { 'content': 'Then another paragraph', 'type': block_type_paragraph },
             { 'content': 'Then another list', 'type': block_type_unordered_list},
-            { 'content': '# Leading to a header', 'type': block_type_heading },
+            { 'content': 'Leading to a header', 'type': block_type_heading, 'level': "1" },
             { 'content': 'followed by a\n multi line list', 'type': block_type_unordered_list },
             { 'content': 'and another one', 'type': block_type_unordered_list },
         ]
@@ -283,7 +283,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': '1. followed by an ordered list', 'type': block_type_ordered_list },
             { 'content': 'Then another paragraph', 'type': block_type_paragraph },
             { 'content': '1. Then another list', 'type': block_type_ordered_list},
-            { 'content': '# Leading to a header', 'type': block_type_heading },
+            { 'content': 'Leading to a header', 'type': block_type_heading, 'level': "1" },
             { 'content': '1. followed by a\n2.  multi line list', 'type': block_type_ordered_list },
             { 'content': ('1. and another one\n2. and another two\n'
                 + '3. and another three\n4. and another four\n'
@@ -309,7 +309,7 @@ class TestMarkdownBlockParser(unittest.TestCase):
             { 'content': 'followed by a quote', 'type': block_type_quote },
             { 'content': 'Then another paragraph', 'type': block_type_paragraph },
             { 'content': 'Then another quote', 'type': block_type_quote},
-            { 'content': '# Leading to a header', 'type': block_type_heading },
+            { 'content': 'Leading to a header', 'type': block_type_heading, 'level': '1' },
             { 'content': 'followed by a\n multi line quote', 'type': block_type_quote },
             { 'content': 'and another one', 'type': block_type_quote },
         ]
