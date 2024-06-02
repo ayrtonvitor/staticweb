@@ -64,7 +64,7 @@ class MarkdownBlockParser:
     def process_block_type(self):
         processed = []
         for block in self.blocks:
-            block_type = self.get_block_processing_type(block)
+            block_type = self.get_block_processing_type(block['content'])
             block['type'] = block_type
 
             self.block_type_processor[block_type](block)
@@ -85,38 +85,38 @@ class MarkdownBlockParser:
         content = '\n' + block['content']
         block['content'] = content.replace('\n* ', '\n').strip()
 
-    def get_block_processing_type(self, block):
-        if self.is_heading(block):
+    def get_block_processing_type(self, text):
+        if self.is_heading(text):
             return block_type_heading
-        elif self.is_code(block):
+        elif self.is_code(text):
             return block_type_code
-        elif self.is_quote(block):
+        elif self.is_quote(text):
             return block_type_quote
-        elif self.is_unordered_list(block):
+        elif self.is_unordered_list(text):
             return block_type_unordered_list
-        elif self.is_ordered_list(block):
+        elif self.is_ordered_list(text):
             return block_type_ordered_list
         else:
             return block_type_paragraph
 
     def is_heading(self, block):
         heading_pattern = r'^#{1,6} \S.*'
-        return re.match(heading_pattern, block['content']) is not None
+        return re.match(heading_pattern, block) is not None
 
     def is_code(self, block):
-        if block['content'][:3] == '```':
-            if block['content'][-3:] != "```" or len(block['content']) < 6:
+        if block[:3] == '```':
+            if block[-3:] != "```" or len(block) < 6:
                 raise ValueError("Could not find proper closing of code block")
             return True
 
     def is_quote(self, block):
-        return block['content'][:2] == "> "
+        return block[:2] == "> "
 
     def is_unordered_list(self, block):
-        return block['content'][:2] == "* "
+        return block[:2] == "* "
 
     def is_ordered_list(self, block):
-        return block['content'][:3] == "1. "
+        return block[:3] == "1. "
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
