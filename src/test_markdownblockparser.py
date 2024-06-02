@@ -260,6 +260,37 @@ class TestMarkdownBlockParser(unittest.TestCase):
         ]
         self.assertListEqual(expected, parser.blocks)
 
+    def test_markdown_to_block_type_ordered_list(self):
+        raw_markdown = ('This is a paragraph\n\n'
+            + '1. followed by an ordered list\n\n'
+            + 'Then another paragraph\n'
+            + '1. Then another list\n'
+            + '# Leading to a header\n'
+            + '1. followed by a \n'
+            + '2.  multi line list\n\n'
+            + '1. and another one\n'
+            + '2. and another two\n'
+            + '3. and another three\n'
+            + '4. and another four\n'
+            + '5. and another five\n'
+        )
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.process_block_type()
+
+        expected = [
+            { 'content': 'This is a paragraph', 'type': block_type_paragraph },
+            { 'content': '1. followed by an ordered list', 'type': block_type_ordered_list },
+            { 'content': 'Then another paragraph', 'type': block_type_paragraph },
+            { 'content': '1. Then another list', 'type': block_type_ordered_list},
+            { 'content': '# Leading to a header', 'type': block_type_heading },
+            { 'content': '1. followed by a\n2.  multi line list', 'type': block_type_ordered_list },
+            { 'content': ('1. and another one\n2. and another two\n'
+                + '3. and another three\n4. and another four\n'
+                + '5. and another five'), 'type': block_type_ordered_list },
+        ]
+        self.assertListEqual(expected, parser.blocks)
+
     def test_markdown_to_block_type_quote(self):
         raw_markdown = ('This is a paragraph\n\n'
             + '> followed by a quote\n\n'

@@ -86,6 +86,8 @@ class MarkdownBlockParser:
             return block_type_quote
         elif self.is_unordered_list(block):
             return block_type_unordered_list
+        elif self.is_ordered_list(block):
+            return block_type_ordered_list
         else:
             return block_type_paragraph
 
@@ -104,6 +106,9 @@ class MarkdownBlockParser:
 
     def is_unordered_list(self, block):
         return block['content'][:2] == "* "
+
+    def is_ordered_list(self, block):
+        return block['content'][:3] == "1. "
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
