@@ -225,3 +225,13 @@ class TestMarkdownBlockParser(unittest.TestCase):
                       'type': block_type_code } ]
 
         self.assertListEqual(expected, parser.blocks)
+
+    def test_markdown_to_block_type_code_new_line_after_token(self):
+        raw_markdown = '```\nthis is a code block with\n\nempty lines inside\n\n\nends here\n```'
+        parser = MarkdownBlockParser(raw_markdown)
+        parser.markdown_to_blocks()
+        parser.process_block_type()
+        expected = [ { 'content': 'this is a code block with\n\nempty lines inside\n\n\nends here',
+                      'type': block_type_code } ]
+
+        self.assertListEqual(expected, parser.blocks)
