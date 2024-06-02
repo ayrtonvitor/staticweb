@@ -12,6 +12,19 @@ class MarkdownBlockParser:
         self.raw_markdown = self.pre_process_md(raw_markdown)
         self.blocks = []
 
+        self.set_block_processing_dict()
+
+    def set_block_processing_dict(self):
+        bypass = lambda _ : None
+        self.block_type_processor ={
+            block_type_paragraph: bypass,
+            block_type_heading: bypass,
+            block_type_code: self.process_code_block,
+            block_type_quote: self.process_quote_block,
+            block_type_unordered_list: self.process_unordered_list,
+            block_type_ordered_list: bypass
+        }
+
     def pre_process_md(self, raw_markdown):
         raw_markdown = '\n' + raw_markdown + '\n'
         replacement = r'\n\n\1\n\n'
@@ -54,12 +67,7 @@ class MarkdownBlockParser:
             block_type = self.get_block_processing_type(block)
             block['type'] = block_type
 
-            if block_type == block_type_code:
-                self.process_code_block(block)
-            elif block_type == block_type_quote:
-                self.process_quote_block(block)
-            elif block_type == block_type_unordered_list:
-                self.process_unordered_list(block)
+            self.block_type_processor[block_type](block)
 
             processed.append(block)
         self.blocks = processed
