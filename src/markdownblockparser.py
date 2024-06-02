@@ -56,8 +56,10 @@ class MarkdownBlockParser:
 
             if block_type == block_type_code:
                 self.process_code_block(block)
-            if block_type == block_type_quote:
+            elif block_type == block_type_quote:
                 self.process_quote_block(block)
+            elif block_type == block_type_unordered_list:
+                self.process_unordered_list(block)
 
             processed.append(block)
         self.blocks = processed
@@ -71,6 +73,10 @@ class MarkdownBlockParser:
         content = '\n' + block['content']
         block['content'] = content.replace('\n> ', '\n').strip()
 
+    def process_unordered_list(self, block):
+        content = '\n' + block['content']
+        block['content'] = content.replace('\n* ', '\n').strip()
+
     def get_block_processing_type(self, block):
         if self.is_heading(block):
             return block_type_heading
@@ -78,6 +84,8 @@ class MarkdownBlockParser:
             return block_type_code
         elif self.is_quote(block):
             return block_type_quote
+        elif self.is_unordered_list(block):
+            return block_type_unordered_list
         else:
             return block_type_paragraph
 
@@ -93,6 +101,9 @@ class MarkdownBlockParser:
 
     def is_quote(self, block):
         return block['content'][:2] == "> "
+
+    def is_unordered_list(self, block):
+        return block['content'][:2] == "* "
 
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
