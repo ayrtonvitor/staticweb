@@ -55,16 +55,14 @@ class MarkdownBlockParser:
             block['type'] = block_type
 
             if block_type == block_type_code:
-                self.process_code_block(block, processed)
-            else:
-                processed.append(block)
+                self.process_code_block(block)
+            processed.append(block)
         self.blocks = processed
 
-    def process_code_block(self, block, processed):
+    def process_code_block(self, block):
         if not self.block_ends_code(block) or len(block['content']) < 6:
             raise ValueError("Could not find proper closing of code block")
         block['content'] = block['content'].replace(self.new_line_inside_code_token, '\n').strip(' \n`')
-        processed.append(block)
 
     def get_block_processing_type(self, block):
         if self.is_heading(block):
