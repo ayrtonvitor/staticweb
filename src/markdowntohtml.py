@@ -17,7 +17,7 @@ class MarkdownToHtml:
         inline_md_parser = InlineMarkDownParser(TextNode(block['content'], text_type_text))
 
         text_nodes = inline_md_parser.text_to_textnodes()
-        leaf_nodes = [node.text_node_to_html_node for node in text_nodes]
+        leaf_nodes = [node.text_node_to_html_node() for node in text_nodes]
 
         return ParentNode(tag='p', children=leaf_nodes)
 
@@ -49,7 +49,7 @@ class MarkdownToHtml:
             block_type_unordered_list: self.md_unordered_list_to_ul,
             block_type_ordered_list: self.md_ordered_list_to_ol
         }
-        return ParentNode(tag='div', children=md_block_type_to_converter[md_block['type']](md_block))
+        return ParentNode(tag='div', children=[md_block_type_to_converter[md_block['type']](md_block)])
 
     def markdown_to_html(self, markdown_text):
         block_parser = MarkdownBlockParser(markdown_text)
