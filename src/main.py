@@ -1,4 +1,5 @@
 import os
+from os.path import isfile
 from markdowntohtml import MarkdownToHtml
 from pathlib import Path
 import re
@@ -59,11 +60,21 @@ def generate_page(from_path, template_path, dest_path):
 
     template = template.replace('{{ Title }}', title).replace('{{ Content }}', converted)
 
-    if not os.path.exists(dest_path):
-        os.makedirs(dest_path)
+    dest_dir = os.path.dirname(dest_path)
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
 
-    with open(os.path.join(dest_path, 'index.html'), 'w') as f:
+    with open(dest_path, 'w') as f:
         f.write(template)
+
+def generate_pages_recursively(dir_path_content, template_path, dest_dir_path):
+    for link in os.listdir(dir_path_content):
+        curr = os.path.join(dir_path_content, link)
+        if os.path.isfile(curr):
+            dest = os.path.join(dest_dir_path, link[:-2]+'html')
+            generate_page(curr, template_path, dest)
+        else:
+            generate_pages_recursively(curr, template_path, os.path.join(dest_dir_path, link))
 
 
 def main():
@@ -71,8 +82,8 @@ def main():
     static_path = os.path.join(project_root, 'static')
     copy_dir(static_path)
 
-    generate_page(
-        os.path.join(project_root, 'content', 'index.md'),
+    generate_pages_recursively(
+        os.path.join(project_root, 'content'),
         os.path.join(project_root, 'template.html'),
         os.path.join(project_root, 'public'),
     )
