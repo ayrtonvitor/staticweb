@@ -88,7 +88,7 @@ class MarkdownBlockParser:
 
     def process_unordered_list(self, block):
         content = '\n' + block['content']
-        block['content'] = content.replace('\n* ', '\n').strip()
+        block['content'] = re.sub(r'\n(?:\*|-) ', '\n', content).strip()
 
     def process_ordered_list(self, block):
         block['items'] = []
@@ -128,7 +128,7 @@ class MarkdownBlockParser:
         return block[:2] == "> "
 
     def is_unordered_list(self, block):
-        return block[:2] == "* "
+        return block[:2] == "* " or block[:2] == "- "
 
     def is_ordered_list(self, block):
         return block[:3] == "1. "
