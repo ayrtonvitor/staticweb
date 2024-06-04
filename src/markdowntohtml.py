@@ -37,7 +37,7 @@ class MarkdownToHtml:
     def md_quote_to_blockquote(self, block):
         text_nodes = self.parse_inline(block['content'])
         leaf_nodes = [node.text_node_to_html_node() for node in text_nodes]
-        quote = LeafNode(tag='p', value=leaf_nodes)
+        quote = ParentNode(tag='p', children=leaf_nodes)
         return ParentNode(tag='blockquote', children=[quote])
 
     def md_unordered_list_to_ul(self, block):
